@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ nombre_proyecto }}</title>
+    <style>
+        :root {
+            --bg-1: #0c1c2b;
+            --bg-2: #102f46;
+            --panel: rgba(255, 255, 255, 0.94);
+            --panel-strong: #f4f8fc;
+            --line: #d8e2ec;
+            --ink: #1b2a38;
+            --ink-soft: #4a5b6a;
+            --brand: #c97028;
+            --brand-dark: #9d551e;
+            --ok: #0d7d51;
+            --err: #9f1d1d;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Trebuchet MS", "Segoe UI", Tahoma, sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.13), transparent 40%),
+                radial-gradient(circle at 80% 0%, rgba(201, 112, 40, 0.2), transparent 35%),
+                linear-gradient(140deg, var(--bg-1), var(--bg-2));
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            z-index: 0;
+            filter: blur(6px);
+            pointer-events: none;
+            opacity: 0.35;
+        }
+
+        body::before {
+            top: -70px;
+            right: -70px;
+            background: radial-gradient(circle, rgba(255, 192, 120, 0.8), transparent 70%);
+            animation: float-orb 8s ease-in-out infinite;
+        }
+
+        body::after {
+            bottom: -80px;
+            left: -60px;
+            background: radial-gradient(circle, rgba(130, 205, 255, 0.8), transparent 70%);
+            animation: float-orb 10s ease-in-out infinite reverse;
+        }
+
+        main {
+            position: relative;
+            z-index: 1;
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 16px 32px;
+        }
+
+        .hero {
+            color: #f8fbff;
+            margin-bottom: 20px;
+            animation: fade-slide 0.6s ease both;
+        }
+
+        .hero h1 {
+            margin: 0;
+            font-size: clamp(1.6rem, 1.2rem + 2vw, 2.5rem);
+            letter-spacing: 0.4px;
+        }
+
+        .hero p {
+            margin: 8px 0 0;
+            color: #d9ebfb;
+            max-width: 780px;
+        }
+
+        .grid {
+            display: grid;
+            gap: 14px;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        }
+
+        .card {
+            position: relative;
+            overflow: hidden;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 16px 38px rgba(5, 17, 28, 0.25);
+            animation: fade-slide 0.45s ease both;
+            transition: transform 0.24s ease, box-shadow 0.24s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 42px rgba(5, 17, 28, 0.3);
+        }
+
+        .card.running {
+            animation: pulse-border 1.05s ease-in-out infinite;
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, rgba(201, 112, 40, 0.1), transparent 45%);
+            pointer-events: none;
+        }
+
+        .card h2 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .desc {
+            margin: 6px 0 12px;
+            min-height: 34px;
+            color: var(--ink-soft);
+            font-size: 0.95rem;
+        }
+
+        .chip-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid #c8d7e6;
+            border-radius: 999px;
+            padding: 5px 10px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #29506d;
+            background: #eff6fc;
+            letter-spacing: 0.2px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        button {
+            border: none;
+            border-radius: 11px;
+            background: linear-gradient(130deg, var(--brand), #d98745);
+            color: #fff;
+            padding: 10px 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        button:hover {
+            background: var(--brand-dark);
+            transform: translateY(-1px);
+        }
+
+        button:disabled {
+            opacity: 0.7;
+            cursor: wait;
+            transform: none;
+        }
+
+        button.running {
+            position: relative;
+            padding-left: 34px;
+        }
+
+        button.running::before {
+            content: "";
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.35);
+            border-top-color: #ffffff;
+            transform: translateY(-50%);
+            animation: spin 0.7s linear infinite;
+        }
+
+        .link {
+            text-decoration: none;
+            font-weight: 700;
+            color: #1f537c;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+
+        .resultado {
+            margin-top: 24px;
+            background: var(--panel-strong);
+            border-radius: 16px;
+            border: 1px solid #cbd8e3;
+            padding: 14px;
+            box-shadow: 0 14px 34px rgba(5, 17, 28, 0.2);
+            animation: fade-slide 0.5s ease both;
+        }
+
+        .resultado header {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+            align-items: baseline;
+        }
+
+        .estado {
+            font-weight: 800;
+            font-size: 0.9rem;
+        }
+
+        .ok {
+            color: var(--ok);
+        }
+
+        .error {
+            color: var(--err);
+        }
+
+        .status {
+            min-height: 24px;
+            margin-left: auto;
+            font-weight: 700;
+            color: #244e72;
+            opacity: 0;
+            transform: translateY(4px);
+            transition: opacity 0.25s ease, transform 0.25s ease;
+        }
+
+        .status.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .status.loading::after {
+            content: " ...";
+            display: inline-block;
+            animation: dot-jump 1s steps(3, end) infinite;
+        }
+
+        pre {
+            margin: 8px 0 0;
+            border-radius: 12px;
+            border: 1px solid #1f2f3e;
+            background: #0e1a26;
+            color: #d9e6f3;
+            padding: 12px;
+            overflow-x: auto;
+            line-height: 1.4;
+        }
+
+        .oculto {
+            display: none;
+        }
+
+        .flash {
+            animation: reveal-result 0.5s ease both;
+        }
+
+        @keyframes fade-slide {
+            from {
+                opacity: 0;
+                transform: translateY(14px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes spin {
+            from {
+                transform: translateY(-50%) rotate(0deg);
+            }
+            to {
+                transform: translateY(-50%) rotate(360deg);
+            }
+        }
+
+        @keyframes float-orb {
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(14px);
+            }
+        }
+
+        @keyframes dot-jump {
+            0% {
+                content: " .";
+            }
+            33% {
+                content: " ..";
+            }
+            66% {
+                content: " ...";
+            }
+            100% {
+                content: " .";
+            }
+        }
+
+        @keyframes pulse-border {
+            0%,
+            100% {
+                border-color: var(--line);
+                box-shadow: 0 16px 38px rgba(5, 17, 28, 0.25);
+            }
+            50% {
+                border-color: #efc9a8;
+                box-shadow: 0 20px 46px rgba(201, 112, 40, 0.32);
+            }
+        }
+
+        @keyframes reveal-result {
+            from {
+                opacity: 0;
+                transform: translateY(8px) scale(0.99);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @media (max-width: 700px) {
+            main {
+                margin-top: 24px;
+            }
+
+            .actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+<main>
+    <section class="hero">
+        <h1>{{ nombre_proyecto }}</h1>
+        <p>{{ subtitulo_proyecto }}. Ejecuta cada escenario y observa los resultados en tiempo real.</p>
+    </section>
+
+    <div class="grid">
+        {% for ejercicio in ejercicios %}
+        <article class="card" style="animation-delay: {{ loop.index0 * 90 }}ms">
+            <h2>{{ ejercicio.titulo }}</h2>
+            <p class="desc">{{ ejercicio.descripcion }}</p>
+            <div class="chip-row">
+                <span class="chip">{{ ejercicio.archivo }}</span>
+                <span class="chip">Python</span>
+                <span class="chip">Concurrencia</span>
+            </div>
+            <div class="actions">
+                <button data-ejecutar="{{ ejercicio.archivo }}">Ejecutar ahora</button>
+                <a class="link" href="{{ url_for('ver_archivo', nombre_archivo=ejercicio.archivo) }}">Ver codigo</a>
+                <span class="status" data-status="{{ ejercicio.archivo }}"></span>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+
+    <section id="resultado" class="resultado oculto" aria-live="polite"></section>
+</main>
+
+<script>
+    const panelResultado = document.getElementById("resultado");
+
+    function escapeHtml(texto) {
+        const div = document.createElement("div");
+        div.innerText = texto;
+        return div.innerHTML;
+    }
+
+    function mostrarResultado(nombreArchivo, data) {
+        const estadoClase = data.ok ? "ok" : "error";
+        const estadoTexto = data.ok ? "Ejecucion exitosa" : "Ejecucion con errores";
+        const salida = data.salida ? escapeHtml(data.salida) : "(sin salida estandar)";
+        const error = data.error ? `<pre>${escapeHtml(data.error)}</pre>` : "";
+
+        panelResultado.classList.remove("oculto");
+        panelResultado.classList.remove("flash");
+        panelResultado.innerHTML = `
+            <header>
+                <h3>Resultado: ${escapeHtml(nombreArchivo)}</h3>
+                <span class="estado ${estadoClase}">${estadoTexto}</span>
+            </header>
+            <p>Duracion: <strong>${data.duracion}s</strong> | Codigo: <strong>${data.codigo ?? "N/A"}</strong></p>
+            <h4>Salida</h4>
+            <pre>${salida}</pre>
+            ${error ? "<h4>Error</h4>" + error : ""}
+        `;
+        requestAnimationFrame(() => panelResultado.classList.add("flash"));
+    }
+
+    async function ejecutarEjercicio(nombreArchivo, boton, statusTag) {
+        const card = boton.closest(".card");
+        boton.disabled = true;
+        boton.classList.add("running");
+        card.classList.add("running");
+        statusTag.textContent = "Ejecutando...";
+        statusTag.classList.add("visible");
+        statusTag.classList.add("loading");
+
+        try {
+            const resp = await fetch(`/ejecutar/${encodeURIComponent(nombreArchivo)}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+            });
+            const data = await resp.json();
+            mostrarResultado(nombreArchivo, data);
+            statusTag.textContent = data.ok ? "Listo" : "Termino con error";
+        } catch (error) {
+            mostrarResultado(nombreArchivo, {
+                ok: false,
+                duracion: 0,
+                codigo: "N/A",
+                salida: "",
+                error: "No se pudo conectar con el servidor Flask.",
+            });
+            statusTag.textContent = "Fallo de conexion";
+        } finally {
+            boton.disabled = false;
+            boton.classList.remove("running");
+            card.classList.remove("running");
+            statusTag.classList.remove("loading");
+            setTimeout(() => statusTag.classList.remove("visible"), 2200);
+        }
+    }
+
+    document.querySelectorAll("button[data-ejecutar]").forEach((boton) => {
+        boton.addEventListener("click", () => {
+            const nombreArchivo = boton.dataset.ejecutar;
+            const statusTag = document.querySelector(`[data-status="${CSS.escape(nombreArchivo)}"]`);
+            ejecutarEjercicio(nombreArchivo, boton, statusTag);
+        });
+    });
+</script>
+</body>
+</html>

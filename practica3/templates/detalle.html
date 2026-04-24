@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ nombre_archivo }}</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, sans-serif;
+            background: #f8fafc;
+            color: #0f172a;
+        }
+
+        main {
+            max-width: 980px;
+            margin: 24px auto;
+            padding: 0 18px 24px;
+        }
+
+        .actions {
+            margin-bottom: 14px;
+        }
+
+        a {
+            color: #0f4c81;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        h1 {
+            margin: 0 0 6px;
+            font-size: 1.55rem;
+        }
+
+        .meta {
+            margin: 0 0 14px;
+            color: #475569;
+        }
+
+        pre {
+            margin: 0;
+            padding: 16px;
+            border-radius: 12px;
+            overflow-x: auto;
+            background: #0b1220;
+            color: #e2e8f0;
+            line-height: 1.45;
+            border: 1px solid #1e293b;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <p class="actions"><a href="{{ url_for('index') }}">Volver al laboratorio</a></p>
+    <h1>{{ nombre_archivo }}</h1>
+    <p class="meta">{{ proyecto }}</p>
+    <pre>{{ contenido }}</pre>
+</main>
+</body>
+</html>
